@@ -76,7 +76,7 @@ module.exports = {
 
     async updateCategory(_, { input: { id, name, photo } }, context) {
       // 1. check auth
-      // const user = isAdmin(context);
+      const user = isAdmin(context);
 
       // 2. validate category data
       const { valid, errors } = validateCategoryInput(name, photo);
