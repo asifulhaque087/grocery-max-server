@@ -23,16 +23,17 @@ module.exports = gql`
 
     # 2. category
     getCategories: [CategoryResponse!]!
+    getCategoriesByAdmin: [CategoryResponse!]!
     getCategory(id: ID!): Category!
 
     # 3. subcategory
-    getSubcategories: [Subcategory!]!
+    getSubcategories: [SubcategoryResponse!]!
     getSubcategory(id: ID!): Subcategory!
     getCatToSub(categoryId: ID!): [Subcategory!]
 
     # 4. product
-    getProducts: [Product!]!
-    getProduct(id: ID!): Product!
+    getProductsByAdmin: [ProductResponse!]!
+    getProductByAdmin(id: ID!): Product!
     getSubToPro(subcategoryId: ID!): [Product!]
 
     # 5. order

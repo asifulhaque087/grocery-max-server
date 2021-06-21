@@ -6,10 +6,25 @@ const { validateMongoId } = require("../../validors/commonValidator");
 
 module.exports = {
   Query: {
-    async getCategories(_, __, context) {
+    async getCategoriesByAdmin(_, __, context) {
       // 1. check auth
-      // const user = isAdmin(context);
+      const user = isAdmin(context);
 
+      try {
+        let categories = await Category.find().sort({ createdAt: -1 });
+
+        newArr = [];
+
+        for (let cat of categories) {
+          newArr.push({ category: cat });
+        }
+        return newArr;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    async getCategories(_, __, context) {
       try {
         let categories = await Category.find().sort({ createdAt: -1 });
 
@@ -25,7 +40,9 @@ module.exports = {
         throw new Error(err);
       }
     },
-    async getCategory(_, { id }) {
+    async getCategory(_, { id }, context) {
+      // 1. check auth
+      const user = isAdmin(context);
       try {
         const category = await Category.findById(id);
         return category;

@@ -7,16 +7,26 @@ const { validateProductInput } = require("../../validors/productValidator");
 
 module.exports = {
   Query: {
-    async getProducts() {
+    // admin operation
+    async getProductsByAdmin(_, __, context) {
+      // 1. check auth
+      const user = isAdmin(context);
       try {
         const products = await Product.find().sort({ createdAt: -1 });
-        return products;
+        newArr = [];
+
+        for (let obj of products) {
+          newArr.push({ product: obj });
+        }
+        return newArr;
       } catch (err) {
         throw new Error(err);
       }
     },
-    async getProduct(_, { id }) {
-      console.log("hello from single product");
+    // admin operation
+    async getProductByAdmin(_, { id }, context) {
+      // 1. check auth
+      const user = isAdmin(context);
       try {
         const product = await Product.findById(id);
         return product;
@@ -24,6 +34,7 @@ module.exports = {
         throw new Error(error);
       }
     },
+    // normal
     async getSubToPro(_, { subcategoryId }) {
       try {
         const products = await Product.find({ subcategory: subcategoryId });

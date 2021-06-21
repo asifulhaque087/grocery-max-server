@@ -24,7 +24,7 @@ const app = express();
 server.applyMiddleware({
   app,
   bodyParserConfig: {
-    limit: "5mb",
+    limit: "1mb",
   },
 });
 

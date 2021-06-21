@@ -12,6 +12,10 @@ module.exports.validateSubcategoryInput = (name, photo, category) => {
     makeError("category", "Category must be provided");
   }
 
+  if (photo.trim() === "") {
+    makeError("photos", "Photo  must  be provided");
+  }
+
   return {
     errors,
     valid: errors.length < 1,

@@ -8,15 +8,25 @@ const {
 
 module.exports = {
   Query: {
-    async getSubcategories() {
+    async getSubcategories(_, __, context) {
+      // 1. check auth
+      const user = isAdmin(context);
       try {
         const subcategories = await Subcategory.find().sort({ createdAt: -1 });
-        return subcategories;
+
+        newArr = [];
+
+        for (let obj of subcategories) {
+          newArr.push({ subcategory: obj });
+        }
+        return newArr;
       } catch (err) {
         throw new Error(err);
       }
     },
-    async getSubcategory(_, { id }) {
+    async getSubcategory(_, { id }, context) {
+      // 1. check auth
+      const user = isAdmin(context);
       try {
         const subcategory = await Subcategory.findById(id);
         return subcategory;
