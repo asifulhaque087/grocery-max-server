@@ -1,6 +1,7 @@
 const { UserInputError } = require("apollo-server-express");
 const Product = require("../../models/Product");
 const Subcategory = require("../../models/Subcategory");
+const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { isAdmin } = require("../../utils/checkAuth");
 const { validateMongoId } = require("../../validors/commonValidator");
 const { validateProductInput } = require("../../validors/productValidator");
@@ -88,6 +89,10 @@ module.exports = {
         };
       }
 
+      // create photo
+
+      photo = base64ToImageUpload(photo);
+
       // 4. create a new product
       product = new Product({
         name,
@@ -148,6 +153,11 @@ module.exports = {
 
       // 3. make sure product  exists
       let product = await Product.findById(id);
+      // manipulate photo
+      if (product.photo !== photo) {
+        singleImageDelete(product.photo);
+        photo = base64ToImageUpload(photo);
+      }
 
       let oldParent;
 

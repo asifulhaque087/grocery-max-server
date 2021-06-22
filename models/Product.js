@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const autopopulate = require("mongoose-autopopulate");
+const { singleImageDelete } = require("../utils/deleteImage");
 
 const productSchema = mongoose.Schema({
   name: {
@@ -98,5 +99,14 @@ const productSchema = mongoose.Schema({
   },
 });
 productSchema.plugin(autopopulate);
+
+// Delete images
+productSchema.pre("remove", async function (next) {
+  if (this.photo) {
+    singleImageDelete(this.photo);
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("Product", productSchema);

@@ -30,53 +30,53 @@ module.exports.multipleImageUpload = async (file) => {
   return all_images;
 };
 
-// single image upload
-module.exports.singleImageUpload = async (uploadFolder, file) => {
-  const { createReadStream, filename, mimetype, encoding } = await file[0];
-  // generateRandomString
-  const { ext } = path.parse(filename);
-  const randomName = generateRandomString(12) + ext;
+// // single image upload
+// module.exports.singleImageUpload = async (uploadFolder, file) => {
+//   const { createReadStream, filename, mimetype, encoding } = await file[0];
+//   // generateRandomString
+//   const { ext } = path.parse(filename);
+//   const randomName = generateRandomString(12) + ext;
 
-  const stream = createReadStream();
-  const pathName = path.join(
-    __dirname,
-    `../../public/images/${uploadFolder}/${randomName}`
-  );
-  await stream.pipe(fs.createWriteStream(pathName));
+//   const stream = createReadStream();
+//   const pathName = path.join(
+//     __dirname,
+//     `../../public/images/${uploadFolder}/${randomName}`
+//   );
+//   await stream.pipe(fs.createWriteStream(pathName));
 
-  return randomName;
-};
+//   return randomName;
+// };
 
-// delete single file
+// // delete single file
 
-module.exports.singleImageDelete = async (folder, image) => {
-  await fs.unlink(
-    path.join(__dirname, `../../public/images/${folder}/${image}`),
-    (err) => {
-      if (err) {
-        console.log(err);
-        throw new UserInputError("Photo cant be deleted", {
-          errors: {
-            photo: "Photo cant be deleted",
-          },
-        });
-      }
-    }
-  );
-};
+// module.exports.singleImageDelete = async (folder, image) => {
+//   await fs.unlink(
+//     path.join(__dirname, `../../public/images/${folder}/${image}`),
+//     (err) => {
+//       if (err) {
+//         console.log(err);
+//         throw new UserInputError("Photo cant be deleted", {
+//           errors: {
+//             photo: "Photo cant be deleted",
+//           },
+//         });
+//       }
+//     }
+//   );
+// };
 
-// if exists
+// // if exists
 
-module.exports.singleImageExist = async (folder, image) => {
-  await fs.access(
-    path.join(__dirname, `../../public/images/${folder}/${image}`),
-    (err) => {
-      if (err) {
-        return false;
-      } else {
-        return true;
-        // singleImageDelete("category", category.photo);
-      }
-    }
-  );
-};
+// module.exports.singleImageExist = async (folder, image) => {
+//   await fs.access(
+//     path.join(__dirname, `../../public/images/${folder}/${image}`),
+//     (err) => {
+//       if (err) {
+//         return false;
+//       } else {
+//         return true;
+//         // singleImageDelete("category", category.photo);
+//       }
+//     }
+//   );
+// };

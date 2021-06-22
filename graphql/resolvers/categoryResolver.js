@@ -1,8 +1,9 @@
-const { UserInputError } = require("apollo-server-express");
 const Category = require("../../models/Category");
 const { isAdmin } = require("../../utils/checkAuth");
 const { validateCategoryInput } = require("../../validors/categoryValidator");
 const { validateMongoId } = require("../../validors/commonValidator");
+const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
+const { singleImageDelete } = require("../../utils/deleteImage");
 
 module.exports = {
   Query: {
@@ -80,6 +81,11 @@ module.exports = {
           errors,
         };
       }
+
+      // create photo
+
+      photo = base64ToImageUpload(photo);
+
       category = new Category({
         name,
         photo,
@@ -106,6 +112,12 @@ module.exports = {
 
       // 3. make sure category  exists
       let category = await Category.findById(id);
+
+      // manipulate photo
+      if (category.photo !== photo) {
+        singleImageDelete(category.photo);
+        photo = base64ToImageUpload(photo);
+      }
 
       if (category) {
         category.name = name;

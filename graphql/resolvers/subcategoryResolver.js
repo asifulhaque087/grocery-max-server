@@ -1,7 +1,9 @@
 const { UserInputError } = require("apollo-server-express");
 const Category = require("../../models/Category");
 const Subcategory = require("../../models/Subcategory");
+const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { isAdmin } = require("../../utils/checkAuth");
+const { singleImageDelete } = require("../../utils/deleteImage");
 const {
   validateSubcategoryInput,
 } = require("../../validors/subcategoryValidator");
@@ -72,6 +74,10 @@ module.exports = {
         };
       }
 
+      // create photo
+
+      photo = base64ToImageUpload(photo);
+
       subcategory = new Subcategory({
         name,
         category,
@@ -108,6 +114,12 @@ module.exports = {
 
       // 3. make sure subcategory  exists
       let subcategory = await Subcategory.findById(id);
+
+      // manipulate photo
+      if (subcategory.photo !== photo) {
+        singleImageDelete(subcategory.photo);
+        photo = base64ToImageUpload(photo);
+      }
 
       let oldParent;
 

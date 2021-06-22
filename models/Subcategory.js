@@ -1,6 +1,7 @@
 const autopopulate = require("mongoose-autopopulate");
 
 const mongoose = require("mongoose");
+const { singleImageDelete } = require("../utils/deleteImage");
 
 const subcategorySchema = mongoose.Schema(
   {
@@ -33,5 +34,14 @@ const subcategorySchema = mongoose.Schema(
   }
 );
 subcategorySchema.plugin(autopopulate);
+
+// Delete images
+subcategorySchema.pre("remove", async function (next) {
+  if (this.photo) {
+    singleImageDelete(this.photo);
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("Subcategory", subcategorySchema);
