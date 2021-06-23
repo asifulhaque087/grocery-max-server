@@ -7,6 +7,7 @@ const { singleImageDelete } = require("../../utils/deleteImage");
 
 module.exports = {
   Query: {
+    // ========================================= admin operation ===========================
     async getCategoriesByAdmin(_, __, context) {
       // 1. check auth
       const user = isAdmin(context);
@@ -24,23 +25,7 @@ module.exports = {
         throw new Error(err);
       }
     },
-
-    async getCategories(_, __, context) {
-      try {
-        let categories = await Category.find().sort({ createdAt: -1 });
-
-        newArr = [];
-
-        for (let cat of categories) {
-          newArr.push({ category: cat });
-        }
-        return newArr;
-
-        // return [ {category} ];
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
+    // ========================================= admin operation ===========================
     async getCategory(_, { id }, context) {
       // 1. check auth
       const user = isAdmin(context);
@@ -49,6 +34,24 @@ module.exports = {
         return category;
       } catch (error) {
         throw new Error(error);
+      }
+    },
+    //======================================= normal operation ============================
+    async getCategories(_, __, context) {
+      try {
+        let categories = await Category.find().sort({ createdAt: -1 });
+        return categories;
+
+        // newArr = [];
+
+        // for (let cat of categories) {
+        //   newArr.push({ category: cat });
+        // }
+        // return newArr;
+
+        // return [ {category} ];
+      } catch (err) {
+        throw new Error(err);
       }
     },
   },

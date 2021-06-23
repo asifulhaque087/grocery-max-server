@@ -22,7 +22,7 @@ module.exports = gql`
     getUsers: [User!]!
 
     # 2. category
-    getCategories: [CategoryResponse!]!
+    getCategories: [Category!]!
     getCategoriesByAdmin: [CategoryResponse!]!
     getCategory(id: ID!): Category!
 
@@ -30,11 +30,16 @@ module.exports = gql`
     getSubcategories: [SubcategoryResponse!]!
     getSubcategory(id: ID!): Subcategory!
     getCatToSub(categoryId: ID!): [Subcategory!]
+    getSubcategoryNormal(id: ID!): Subcategory!
 
     # 4. product
     getProductsByAdmin: [ProductResponse!]!
     getProductByAdmin(id: ID!): Product!
     getSubToPro(subcategoryId: ID!): [Product!]
+    getBestSellingProducts: [Product!]
+    getBestNewArrivalProducts: [Product!]
+    getMostDiscountProducts: [Product!]
+    getKeywordProducts(keyword: String): [Product!]
 
     # 5. order
     getOrders: [Order!]!

@@ -3,12 +3,13 @@ const Product = require("../../models/Product");
 const Subcategory = require("../../models/Subcategory");
 const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { isAdmin } = require("../../utils/checkAuth");
+const { singleImageDelete } = require("../../utils/deleteImage");
 const { validateMongoId } = require("../../validors/commonValidator");
 const { validateProductInput } = require("../../validors/productValidator");
 
 module.exports = {
   Query: {
-    // admin operation
+    // ========================================= admin operation ===========================
     async getProductsByAdmin(_, __, context) {
       // 1. check auth
       const user = isAdmin(context);
@@ -24,7 +25,7 @@ module.exports = {
         throw new Error(err);
       }
     },
-    // admin operation
+    // ========================================= admin operation ===========================
     async getProductByAdmin(_, { id }, context) {
       // 1. check auth
       const user = isAdmin(context);
@@ -35,13 +36,57 @@ module.exports = {
         throw new Error(error);
       }
     },
-    // normal
+    // ========================================= normal operation ===========================
     async getSubToPro(_, { subcategoryId }) {
       try {
         const products = await Product.find({ subcategory: subcategoryId });
         return products;
       } catch (error) {
         throw new Error(error);
+      }
+    },
+    // ========================================= normal operation ===========================
+    async getBestSellingProducts() {
+      try {
+        const products = await Product.find()
+          .sort({ totalSell: -1 })
+          .collation({ locale: "en_US", numericOrdering: true })
+          .limit(10);
+        return products;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    // ========================================= normal operation ===========================
+    async getBestNewArrivalProducts() {
+      try {
+        const products = await Product.find().sort({ createdAt: -1 }).limit(10);
+        return products;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    // ========================================= normal operation ===========================
+    async getMostDiscountProducts() {
+      try {
+        const products = await Product.find()
+          .sort({ persentage: -1 })
+          .collation({ locale: "en_US", numericOrdering: true })
+          .limit(10);
+        return products;
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    // ========================================= normal operation ===========================
+    async getKeywordProducts(_, { keyword }) {
+      try {
+        const products = await Product.find({
+          name: { $regex: keyword, $options: "i" },
+        });
+        return products;
+      } catch (err) {
+        throw new Error(err);
       }
     },
   },
@@ -65,7 +110,7 @@ module.exports = {
       },
       context
     ) {
-      // const user = isAdmin(context);
+      const user = isAdmin(context);
 
       // 2. validate product data
       const { valid, errors } = validateProductInput(name, photo, subcategory);
@@ -140,7 +185,7 @@ module.exports = {
       context
     ) {
       // 1. check auth
-      // const user = isAdmin(context);
+      const user = isAdmin(context);
 
       // 2. validate product data
       const { valid, errors } = validateProductInput(name, photo, subcategory);

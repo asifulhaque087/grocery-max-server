@@ -4,6 +4,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { v4: uuidv4 } = require("uuid");
 const Category = require("../../models/Category");
 const Order = require("../../models/Order");
+const Product = require("../../models/Product");
 const Subcategory = require("../../models/Subcategory");
 const { isAdmin, isBuyer } = require("../../utils/checkAuth");
 
@@ -52,6 +53,13 @@ module.exports = {
         res.status(400);
         throw new Error("No order items");
       } else {
+        for (let item of orderItems) {
+          let product = await Product.findById(item.product);
+          product.totalSell =
+            parseInt(product.totalSell) + parseInt(item.count);
+          product = await product.save();
+        }
+
         let order = new Order({
           user: user.id,
           orderItems,
@@ -62,7 +70,6 @@ module.exports = {
           shippingPrice,
           totalPrice,
         });
-        // console.log(order);
 
         order = await order.save();
 
@@ -72,7 +79,7 @@ module.exports = {
     // =========================  Update To Paid =============>
 
     async updateOrderToPaid(_, { input: { id, email, source } }, context) {
-      console.log("from update order to paid");
+      // console.log("from update order to paid");
 
       // 1. check auth
       const user = isBuyer(context);
@@ -89,7 +96,7 @@ module.exports = {
             source: source,
           });
 
-          console.log("customer", customer);
+          // console.log("customer", customer);
           if (customer) {
             const newPayment = await stripe.charges.create({
               amount: parseInt(order.totalPrice),
@@ -98,7 +105,7 @@ module.exports = {
               receipt_email: customer.email,
             });
 
-            console.log("new payment", newPayment);
+            // console.log("new payment", newPayment);
             order.isPaid = true;
             order.paidAt = Date.now();
 
@@ -142,7 +149,7 @@ module.exports = {
     },
     // ============================  Delete Order =============>
     async deleteOrder(_, { id }, context) {
-      console.log("hello from deletesubcategory", id);
+      // console.log("hello from deletesubcategory", id);
       // 1. check auth
       const user = isAdmin(context);
 

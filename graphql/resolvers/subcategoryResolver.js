@@ -10,6 +10,7 @@ const {
 
 module.exports = {
   Query: {
+    // ========================================= admin operation ===========================
     async getSubcategories(_, __, context) {
       // 1. check auth
       const user = isAdmin(context);
@@ -26,6 +27,7 @@ module.exports = {
         throw new Error(err);
       }
     },
+    // ========================================= admin operation ===========================
     async getSubcategory(_, { id }, context) {
       // 1. check auth
       const user = isAdmin(context);
@@ -36,6 +38,17 @@ module.exports = {
         throw new Error(error);
       }
     },
+    // ========================================= normal operation ===========================
+    async getSubcategoryNormal(_, { id }) {
+      try {
+        const subcategory = await Subcategory.findById(id);
+        return subcategory;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    // ========================================= normal operation ===========================
+
     async getCatToSub(_, { categoryId }) {
       try {
         const subcategories = await Subcategory.find({ category: categoryId });
