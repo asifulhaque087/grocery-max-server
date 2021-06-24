@@ -36,6 +36,15 @@ module.exports = {
         throw new Error(error);
       }
     },
+    // ========================================= admin operation ===========================
+    async getProductDetails(_, { id }) {
+      try {
+        const product = await Product.findById(id);
+        return product;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
     // ========================================= normal operation ===========================
     async getSubToPro(_, { subcategoryId }) {
       try {

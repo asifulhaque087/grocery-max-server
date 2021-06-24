@@ -35,6 +35,7 @@ module.exports = gql`
     # 4. product
     getProductsByAdmin: [ProductResponse!]!
     getProductByAdmin(id: ID!): Product!
+    getProductDetails(id: ID!): Product!
     getSubToPro(subcategoryId: ID!): [Product!]
     getBestSellingProducts: [Product!]
     getBestNewArrivalProducts: [Product!]
@@ -44,6 +45,7 @@ module.exports = gql`
     # 5. order
     getOrders: [Order!]!
     getOrder(id: ID!): Order!
+    getUserToOrder: [Order]!
   }
 
   type Mutation {
@@ -71,7 +73,9 @@ module.exports = gql`
     # 5. order
     createOrder(input: OrderCreateInput): Order!
     updateOrderToPaid(input: OrderUpdateToPaidInput): Order!
+    updateOrderToDelivered(id: ID!): Order!
     deleteOrder(id: ID!): Order!
+    deleteOrderByUser(id: ID!): Order!
   }
 `;
 

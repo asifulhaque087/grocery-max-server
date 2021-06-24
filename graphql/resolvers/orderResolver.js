@@ -7,6 +7,7 @@ const Order = require("../../models/Order");
 const Product = require("../../models/Product");
 const Subcategory = require("../../models/Subcategory");
 const { isAdmin, isBuyer } = require("../../utils/checkAuth");
+const sendEmail = require("../../utils/sendEmail");
 
 module.exports = {
   Query: {
@@ -21,6 +22,19 @@ module.exports = {
     async getOrder(_, { id }) {
       try {
         const order = await Order.findById(id);
+        return order;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+
+    //======================================= normal operation ============================
+    async getUserToOrder(_, __, context) {
+      // 1. check auth
+      const user = isBuyer(context);
+
+      try {
+        const order = await Order.find({ user: user.id });
         return order;
       } catch (error) {
         throw new Error(error);
@@ -45,10 +59,11 @@ module.exports = {
       },
       context
     ) {
-      // console.log("order crediential");
-      // console.log(orderItems);
       // 1. check auth
       const user = isBuyer(context);
+
+      // HTML Message
+
       if (orderItems && orderItems.length === 0) {
         res.status(400);
         throw new Error("No order items");
@@ -72,6 +87,43 @@ module.exports = {
         });
 
         order = await order.save();
+
+        let orderUrl;
+        if (process.env.NODE_ENV == "production") {
+          orderUrl = `grocery-max-web.vercel.apporders/${order.id}`;
+        } else {
+          orderUrl = `http://localhost:3000/orders/${order.id}`;
+        }
+
+        let invoiceDesign = `
+        <h1>Order id: ${order.id}</h1>
+        <p>You have ordered: ${orderItems.length}</p>
+        <p>View your order</p>
+        <a href=${orderUrl} clicktracking=off>${orderUrl}</a>
+        `;
+        for (let item of order.orderItems) {
+          invoiceDesign += `<div>
+         <div> product name: ${item.name}</div>
+         <div> product qty: ${item.count}</div>
+         <div> product price: ${item.price}</div>
+         </div>`;
+        }
+        invoiceDesign += `<div>
+        <p>items price: ${order.itemPrice}</p>
+        <p>tax price: ${order.taxPrice}</p>
+        <p>shipping price: ${order.shippingPrice}</p>
+        <p>total price: ${order.totalPrice}</p>
+        </div>`;
+
+        try {
+          await sendEmail({
+            to: user.email,
+            subject: "Your Order invoice",
+            text: invoiceDesign,
+          });
+        } catch (err) {
+          console.log(err);
+        }
 
         return order;
       }
@@ -147,6 +199,27 @@ module.exports = {
       //   })
       //   .catch((err) => console.log(err));
     },
+    // ============================  Delivered Order =============>
+    async updateOrderToDelivered(_, { id }, context) {
+      // console.log("hello from deletesubcategory", id);
+      // 1. check auth
+      const user = isAdmin(context);
+
+      try {
+        // 2. make sure order  exists
+        let order = await Order.findById(id);
+        if (order) {
+          order.isDelivered = true;
+          order.deliveredAt = Date.now();
+          order = await order.save();
+          return order;
+        } else {
+          throw new Error("order not found");
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
     // ============================  Delete Order =============>
     async deleteOrder(_, { id }, context) {
       // console.log("hello from deletesubcategory", id);
@@ -154,13 +227,32 @@ module.exports = {
       const user = isAdmin(context);
 
       try {
-        // 2. make sure subcategory doesnot exists
-        const subcategory = await Subcategory.findById(id);
-        if (subcategory) {
-          const deletedSubcategory = await subcategory.delete();
-          return deletedSubcategory;
+        // 2. make sure order  exists
+        const order = await Order.findById(id);
+        if (order) {
+          const deletedOrder = await order.delete();
+          return deletedOrder;
         } else {
-          throw new Error("Subcategory not found");
+          throw new Error("order not found");
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    // ============================  Delete Order =============>
+    async deleteOrderByUser(_, { id }, context) {
+      console.log("hello from deletesubcategory", id);
+      // 1. check auth
+      const user = isBuyer(context);
+
+      try {
+        // 2. make sure order  exists
+        const order = await Order.findById(id);
+        if (order) {
+          const deletedOrder = await order.delete();
+          return deletedOrder;
+        } else {
+          throw new Error("order not found");
         }
       } catch (err) {
         throw new Error(err);

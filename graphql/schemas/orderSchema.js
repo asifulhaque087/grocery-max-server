@@ -54,6 +54,7 @@ type Order {
     totalPrice: String
     isPaid: Boolean
     isDelivered: Boolean
+    createdAt: String!
     user: User
     shippingAddress: Shipping
     paymentResult: Payment

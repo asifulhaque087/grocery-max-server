@@ -1,8 +1,6 @@
-
 const stripe = require("stripe")(
   "sk_test_51Ial7RIVHzgcEShqPOvFBraW05eeH5KF3hmZ6eJZXBJY7jEyUehRcsYqbXXApMrdNTTeeS1kZpuwpZL6KgYBhqOD0087UaH1mq"
 );
-
 
 const crypto = require("crypto");
 const User = require("../../models/User");
@@ -155,9 +153,17 @@ module.exports = {
       // Create reset url to email to provided email
       let resetUrl;
       if (user.role === "admin") {
-        resetUrl = `http://localhost:3000/admin/resetpassword/${resetToken}`;
+        if (process.env.NODE_ENV == "production") {
+          resetUrl = `https://grocery-max-web.vercel.app/admin/resetpassword/${resetToken}`;
+        } else {
+          resetUrl = `http://localhost:3000/admin/resetpassword/${resetToken}`;
+        }
       } else {
-        resetUrl = `http://localhost:3000/resetpassword/${resetToken}`;
+        if (process.env.NODE_ENV == "production") {
+          resetUrl = `https://grocery-max-web.vercel.app/resetpassword/${resetToken}`;
+        } else {
+          resetUrl = `http://localhost:3000/resetpassword/${resetToken}`;
+        }
       }
       // HTML Message
       const message = `
