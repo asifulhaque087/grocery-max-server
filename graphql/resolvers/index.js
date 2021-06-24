@@ -1,3 +1,4 @@
+const bannerResolver = require("./bannerResolver");
 const categoryResolver = require("./categoryResolver");
 const orderResolver = require("./orderResolver");
 const productResolver = require("./productResolver");
@@ -9,6 +10,7 @@ module.exports = {
     ...userResolver.Query,
     ...categoryResolver.Query,
     ...subcategoryResolver.Query,
+    ...bannerResolver.Query,
     ...productResolver.Query,
     ...orderResolver.Query,
   },
@@ -16,6 +18,7 @@ module.exports = {
     ...userResolver.Mutation,
     ...categoryResolver.Mutation,
     ...subcategoryResolver.Mutation,
+    ...bannerResolver.Mutation,
     ...productResolver.Mutation,
     ...orderResolver.Mutation,
   },

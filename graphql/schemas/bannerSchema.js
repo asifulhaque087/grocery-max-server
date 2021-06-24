@@ -1,7 +1,6 @@
 module.exports.bannerSchema = `
   type Banner {
     id: ID!
-    name: String!
     photo: String
     createdAt: String!
     updatedAt: String!
