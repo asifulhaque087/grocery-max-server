@@ -178,7 +178,9 @@ module.exports = {
           subject: "Password Reset Request",
           text: message,
         });
-        return { url: "Email Sent, Plz check you spam" };
+        return {
+          url: "Email Sent, Check your inbox. If not there check spam box",
+        };
       } catch (err) {
         console.log(err);
 

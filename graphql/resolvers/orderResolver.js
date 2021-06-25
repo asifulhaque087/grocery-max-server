@@ -90,9 +90,9 @@ module.exports = {
 
         let orderUrl;
         if (process.env.NODE_ENV == "production") {
-          orderUrl = `grocery-max-web.vercel.apporders/${order.id}`;
+          orderUrl = `grocery-max-web.vercel.app/order/${order.id}`;
         } else {
-          orderUrl = `http://localhost:3000/orders/${order.id}`;
+          orderUrl = `http://localhost:3000/order/${order.id}`;
         }
 
         let invoiceDesign = `
@@ -241,7 +241,7 @@ module.exports = {
     },
     // ============================  Delete Order =============>
     async deleteOrderByUser(_, { id }, context) {
-      console.log("hello from deletesubcategory", id);
+      // console.log("hello from deletesubcategory", id);
       // 1. check auth
       const user = isBuyer(context);
 
