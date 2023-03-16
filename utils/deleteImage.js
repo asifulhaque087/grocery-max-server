@@ -5,7 +5,7 @@ module.exports.singleImageDelete = async (image) => {
   await fs.unlink(path.join(__dirname, `../public/images/${image}`), (err) => {
     if (err) {
       console.log(err);
-      throw new Error("photo cant be deleted");
+      // throw new Error("photo cant be deleted");
     }
   });
 };
