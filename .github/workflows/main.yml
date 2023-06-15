@@ -44,11 +44,6 @@ jobs:
           echo "NODE_VERSION}=${{ secrets.NODE_VERSION}}" >> .env
 
 
-      # Runs a single command using the runners shell
-      - name: install dependencies and run server
-        run: npm install && npm run start
-        env:
-          CI: false
 
       # Runs a set of commands using the runners shell
       - name: FTP-Deploy-Action
