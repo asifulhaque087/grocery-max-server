@@ -1,7 +1,7 @@
 const autopopulate = require("mongoose-autopopulate");
 
 const mongoose = require("mongoose");
-const { singleImageDelete } = require("../utils/deleteImage");
+const { deleteFromCloudinary } = require("../utils/imageUtils");
 
 const bannerSchema = mongoose.Schema({
   // name: {
@@ -22,7 +22,7 @@ bannerSchema.plugin(autopopulate);
 // Delete images
 bannerSchema.pre("remove", async function (next) {
   if (this.photo) {
-    singleImageDelete(this.photo);
+    deleteFromCloudinary(this.photo);
   }
 
   next();

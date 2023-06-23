@@ -3,7 +3,11 @@ const { isAdmin } = require("../../utils/checkAuth");
 const { validateCategoryInput } = require("../../validors/categoryValidator");
 const { validateMongoId } = require("../../validors/commonValidator");
 const { singleImageDelete } = require("../../utils/deleteImage");
-const { base64ToCloudinary } = require("../../utils/imageUtils");
+const {
+  base64ToCloudinary,
+  deleteFromCloudinary,
+  updateFromCloudinary,
+} = require("../../utils/imageUtils");
 
 module.exports = {
   Query: {
@@ -89,7 +93,7 @@ module.exports = {
 
       // create photo
 
-      photo = base64ToCloudinary(photo);
+      photo = await base64ToCloudinary(photo);
 
       category = new Category({
         name,
@@ -120,8 +124,7 @@ module.exports = {
 
       // manipulate photo
       if (category.photo !== photo) {
-        singleImageDelete(category.photo);
-        photo = base64ToImageUpload(photo);
+        photo = await updateFromCloudinary(category.photo, photo)
       }
 
       if (category) {

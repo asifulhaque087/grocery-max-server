@@ -6,6 +6,7 @@ const { isAdmin } = require("../../utils/checkAuth");
 const { singleImageDelete } = require("../../utils/deleteImage");
 const { validateMongoId } = require("../../validors/commonValidator");
 const { validateProductInput } = require("../../validors/productValidator");
+const { base64ToCloudinary, updateFromCloudinary } = require("../../utils/imageUtils");
 
 module.exports = {
   Query: {
@@ -145,7 +146,7 @@ module.exports = {
 
       // create photo
 
-      photo = base64ToImageUpload(photo);
+      photo = base64ToCloudinary(photo);
 
       // 4. create a new product
       product = new Product({
@@ -209,8 +210,7 @@ module.exports = {
       let product = await Product.findById(id);
       // manipulate photo
       if (product.photo !== photo) {
-        singleImageDelete(product.photo);
-        photo = base64ToImageUpload(photo);
+        photo = updateFromCloudinary(product.photo, photo);
       }
 
       let oldParent;

@@ -4,6 +4,7 @@ const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { singleImageDelete } = require("../../utils/deleteImage");
 const { validateBannerInput } = require("../../validors/bannerValidator");
 const Banner = require("../../models/Banner");
+const { base64ToCloudinary, updateFromCloudinary } = require("../../utils/imageUtils");
 
 module.exports = {
   Query: {
@@ -65,7 +66,7 @@ module.exports = {
 
       // create photo
 
-      photo = base64ToImageUpload(photo);
+      photo = base64ToCloudinary(photo);
 
       let banner = new Banner({
         photo,
@@ -95,8 +96,7 @@ module.exports = {
 
       // manipulate photo
       if (banner.photo !== photo) {
-        singleImageDelete(banner.photo);
-        photo = base64ToImageUpload(photo);
+        photo = updateFromCloudinary(banner.photo,photo);
       }
 
       if (banner) {
