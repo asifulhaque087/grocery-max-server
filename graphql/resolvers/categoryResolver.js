@@ -2,8 +2,8 @@ const Category = require("../../models/Category");
 const { isAdmin } = require("../../utils/checkAuth");
 const { validateCategoryInput } = require("../../validors/categoryValidator");
 const { validateMongoId } = require("../../validors/commonValidator");
-const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { singleImageDelete } = require("../../utils/deleteImage");
+const { base64ToCloudinary } = require("../../utils/imageUtils");
 
 module.exports = {
   Query: {
@@ -59,6 +59,8 @@ module.exports = {
     // ============================  Create  =============>
 
     async createCategory(_, { input: { photo, name } }, context) {
+      console.log("from server");
+
       // 1. check auth
       const user = isAdmin(context);
 
@@ -87,7 +89,7 @@ module.exports = {
 
       // create photo
 
-      photo = base64ToImageUpload(photo);
+      photo = base64ToCloudinary(photo);
 
       category = new Category({
         name,
