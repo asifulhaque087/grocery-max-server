@@ -11,17 +11,14 @@ const categorySchema = mongoose.Schema(
     photo: {
       type: String,
     },
+    parentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
     active: {
       type: Boolean,
       default: true,
     },
-    subcategories: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Subcategory",
-        autopopulate: true,
-      },
-    ],
   },
   {
     timestamps: true,

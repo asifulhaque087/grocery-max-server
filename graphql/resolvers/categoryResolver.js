@@ -62,8 +62,8 @@ module.exports = {
   Mutation: {
     // ============================  Create  =============>
 
-    async createCategory(_, { input: { photo, name } }, context) {
-      console.log("from server");
+    async createCategory(_, { input: { photo, name, parentId } }, context) {
+      parentId = parentId == -1 ? null : parentId;
 
       // 1. check auth
       const user = isAdmin(context);
@@ -98,6 +98,7 @@ module.exports = {
       category = new Category({
         name,
         photo,
+        parentId,
       });
       category = await category.save();
       return {
@@ -124,7 +125,7 @@ module.exports = {
 
       // manipulate photo
       if (category.photo !== photo) {
-        photo = await updateFromCloudinary(category.photo, photo)
+        photo = await updateFromCloudinary(category.photo, photo);
       }
 
       if (category) {
