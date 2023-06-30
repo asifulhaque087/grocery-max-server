@@ -11,7 +11,7 @@ module.exports.productSchema = `
     unit: String!
     stock: String!
     totalSell: String!
-    subcategory: Subcategory
+    category: Category 
     createdAt: String
   }
 
@@ -36,7 +36,7 @@ module.exports.productSchema = `
     qty: String
     unit: String
     stock: String
-    subcategory: ID
+    category: ID
   }
   input ProductUpdateInput {
     id: ID!
@@ -48,6 +48,6 @@ module.exports.productSchema = `
     qty: String
     unit: String
     stock: String
-    subcategory: ID
+    category: ID
   }
 `;

@@ -92,9 +92,9 @@ const productSchema = mongoose.Schema({
     type: Date,
   },
 
-  subcategory: {
+  category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Subcategory",
+    ref: "Category",
     autopopulate: true,
   },
 });

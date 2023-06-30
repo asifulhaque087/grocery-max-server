@@ -6,7 +6,10 @@ const { isAdmin } = require("../../utils/checkAuth");
 const { singleImageDelete } = require("../../utils/deleteImage");
 const { validateMongoId } = require("../../validors/commonValidator");
 const { validateProductInput } = require("../../validors/productValidator");
-const { base64ToCloudinary, updateFromCloudinary } = require("../../utils/imageUtils");
+const {
+  base64ToCloudinary,
+  updateFromCloudinary,
+} = require("../../utils/imageUtils");
 
 module.exports = {
   Query: {
@@ -115,15 +118,20 @@ module.exports = {
           qty,
           unit,
           stock,
-          subcategory,
+          category,
         },
       },
       context
     ) {
+      category = category == -1 ? null : category;
+
+      // console.log("input are ", photo, category, name, price);
+      // return;
+
       const user = isAdmin(context);
 
       // 2. validate product data
-      const { valid, errors } = validateProductInput(name, photo, subcategory);
+      const { valid, errors } = validateProductInput(name, photo, category);
 
       if (!valid) {
         return {
@@ -146,7 +154,7 @@ module.exports = {
 
       // create photo
 
-      photo = base64ToCloudinary(photo);
+      photo = await base64ToCloudinary(photo);
 
       // 4. create a new product
       product = new Product({
@@ -160,15 +168,15 @@ module.exports = {
         unit,
         stock,
         // user: user.id,
-        subcategory,
+        category,
       });
       product = await product.save();
 
-      if (subcategory) {
-        subcategory = await Subcategory.findOne({ _id: subcategory });
-        subcategory.products.push(product);
-        await subcategory.save();
-      }
+      // if (subcategory) {
+      //   subcategory = await Subcategory.findOne({ _id: subcategory });
+      //   subcategory.products.push(product);
+      //   await subcategory.save();
+      // }
 
       return {
         product,
