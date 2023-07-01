@@ -16,6 +16,13 @@ module.exports.productSchema = `
   }
 
 
+  type CategoryAndProduct{
+    categories: [Category]
+    products: [Product]
+  }
+
+
+
 
 
   type ProductResponse{

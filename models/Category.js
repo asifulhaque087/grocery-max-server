@@ -14,6 +14,7 @@ const categorySchema = mongoose.Schema(
     parentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
+      // autopopulate: true,
     },
     active: {
       type: Boolean,

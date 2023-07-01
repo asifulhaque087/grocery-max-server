@@ -1,6 +1,7 @@
 const { UserInputError } = require("apollo-server-express");
 const Product = require("../../models/Product");
 const Subcategory = require("../../models/Subcategory");
+const Category = require("../../models/Category");
 const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { isAdmin } = require("../../utils/checkAuth");
 const { singleImageDelete } = require("../../utils/deleteImage");
@@ -50,10 +51,12 @@ module.exports = {
       }
     },
     // ========================================= normal operation ===========================
-    async getSubToPro(_, { subcategoryId }) {
+    async get_category_and_product_by_category(_, { categoryId }) {
+      // console.log("this is from get category and product")
       try {
-        const products = await Product.find({ subcategory: subcategoryId });
-        return products;
+        const products = await Product.find({ category: categoryId });
+        const categories = await Category.find({ parentId: categoryId });
+        return { products, categories };
       } catch (error) {
         throw new Error(error);
       }
