@@ -45,6 +45,12 @@ module.exports.productSchema = `
     stock: String
     category: ID
   }
+
+
+
+
+
+
   input ProductUpdateInput {
     id: ID!
     name: String!
