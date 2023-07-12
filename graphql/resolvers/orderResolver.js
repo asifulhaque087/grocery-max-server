@@ -131,7 +131,7 @@ module.exports = {
     // =========================  Update To Paid =============>
 
     async updateOrderToPaid(_, { input: { id, email, source } }, context) {
-      // console.log("from update order to paid");
+      // console.log("from update order to paid ", id, email, source);
 
       // 1. check auth
       const user = isBuyer(context);
@@ -141,6 +141,7 @@ module.exports = {
 
       const idempontencyKey = uuidv4();
       // const idempontencyKey = "uuid()";
+
       if (order) {
         try {
           const customer = await stripe.customers.create({

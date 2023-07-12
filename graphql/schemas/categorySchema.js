@@ -3,7 +3,7 @@ module.exports.categorySchema = `
     id: ID!
     name: String!
     photo: String
-    subcategories: [Subcategory!]
+    parentId: ID
     createdAt: String!
     updatedAt: String!
   }
@@ -16,11 +16,13 @@ module.exports.categorySchema = `
   input CategoryCreateInput {
     name: String!
     photo: String!
+    parentId: ID
   }
 
   input CategoryUpdateInput {
     id: ID!
     name: String!
     photo: String!
+    parentId: ID
   }
 `;

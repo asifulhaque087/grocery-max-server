@@ -43,7 +43,7 @@ module.exports = gql`
     getProductsByAdmin: [ProductResponse!]!
     getProductByAdmin(id: ID!): Product!
     getProductDetails(id: ID!): Product!
-    getSubToPro(subcategoryId: ID!): [Product!]
+    get_category_and_product_by_category(categoryId: ID!): CategoryAndProduct
     getBestSellingProducts: [Product!]
     getBestNewArrivalProducts: [Product!]
     getMostDiscountProducts: [Product!]

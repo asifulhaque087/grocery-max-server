@@ -1,4 +1,4 @@
-module.exports.validateProductInput = (name, photo, subcategory) => {
+module.exports.validateProductInput = (name, photo, category) => {
   const errors = [];
   const makeError = (field, message) => {
     errors.push({ field, message });
@@ -8,9 +8,9 @@ module.exports.validateProductInput = (name, photo, subcategory) => {
     makeError("name", "product name must not be empty");
   }
 
-  if (subcategory.trim() === "") {
-    makeError("subcategory", "Subcategory must be provided");
-  }
+  // if (subcategory.trim() === "") {
+  //   makeError("subcategory", "Subcategory must be provided");
+  // }
 
   return {
     errors,

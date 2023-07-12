@@ -1,11 +1,16 @@
 const { UserInputError } = require("apollo-server-express");
 const Product = require("../../models/Product");
 const Subcategory = require("../../models/Subcategory");
+const Category = require("../../models/Category");
 const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { isAdmin } = require("../../utils/checkAuth");
 const { singleImageDelete } = require("../../utils/deleteImage");
 const { validateMongoId } = require("../../validors/commonValidator");
 const { validateProductInput } = require("../../validors/productValidator");
+const {
+  base64ToCloudinary,
+  updateFromCloudinary,
+} = require("../../utils/imageUtils");
 
 module.exports = {
   Query: {
@@ -46,10 +51,12 @@ module.exports = {
       }
     },
     // ========================================= normal operation ===========================
-    async getSubToPro(_, { subcategoryId }) {
+    async get_category_and_product_by_category(_, { categoryId }) {
+      // console.log("this is from get category and product")
       try {
-        const products = await Product.find({ subcategory: subcategoryId });
-        return products;
+        const products = await Product.find({ category: categoryId });
+        const categories = await Category.find({ parentId: categoryId });
+        return { products, categories };
       } catch (error) {
         throw new Error(error);
       }
@@ -114,15 +121,20 @@ module.exports = {
           qty,
           unit,
           stock,
-          subcategory,
+          category,
         },
       },
       context
     ) {
+      category = category == -1 ? null : category;
+
+      // console.log("input are ", photo, category, name, price);
+      // return;
+
       const user = isAdmin(context);
 
       // 2. validate product data
-      const { valid, errors } = validateProductInput(name, photo, subcategory);
+      const { valid, errors } = validateProductInput(name, photo, category);
 
       if (!valid) {
         return {
@@ -145,7 +157,7 @@ module.exports = {
 
       // create photo
 
-      photo = base64ToImageUpload(photo);
+      photo = await base64ToCloudinary(photo);
 
       // 4. create a new product
       product = new Product({
@@ -159,15 +171,15 @@ module.exports = {
         unit,
         stock,
         // user: user.id,
-        subcategory,
+        category,
       });
       product = await product.save();
 
-      if (subcategory) {
-        subcategory = await Subcategory.findOne({ _id: subcategory });
-        subcategory.products.push(product);
-        await subcategory.save();
-      }
+      // if (subcategory) {
+      //   subcategory = await Subcategory.findOne({ _id: subcategory });
+      //   subcategory.products.push(product);
+      //   await subcategory.save();
+      // }
 
       return {
         product,
@@ -188,7 +200,7 @@ module.exports = {
           qty,
           unit,
           stock,
-          subcategory,
+          category,
         },
       },
       context
@@ -197,7 +209,7 @@ module.exports = {
       const user = isAdmin(context);
 
       // 2. validate product data
-      const { valid, errors } = validateProductInput(name, photo, subcategory);
+      const { valid, errors } = validateProductInput(name, photo, category);
 
       if (!valid) {
         return {
@@ -207,24 +219,10 @@ module.exports = {
 
       // 3. make sure product  exists
       let product = await Product.findById(id);
+
       // manipulate photo
       if (product.photo !== photo) {
-        singleImageDelete(product.photo);
-        photo = base64ToImageUpload(photo);
-      }
-
-      let oldParent;
-
-      if (product.subcategory) {
-        oldParent = product.subcategory.id;
-      }
-
-      let newParent = true;
-
-      if (oldParent) {
-        if (oldParent == subcategory) {
-          newParent = false;
-        }
+        photo = await updateFromCloudinary(product.photo, photo);
       }
 
       // 5. update the product
@@ -238,36 +236,8 @@ module.exports = {
         product.qty = qty;
         product.unit = unit;
         product.stock = stock;
-        product.subcategory = subcategory;
+        product.category = category;
         product = await product.save();
-
-        // 7. Play with parent
-        if (newParent) {
-          // inject into new parent
-          newParent = await Subcategory.findOne({ _id: subcategory });
-          if (newParent) {
-            newParent.products.push(product);
-            await newParent.save();
-          }
-        }
-
-        if (oldParent) {
-          // remove from old parent
-          oldParent = await Subcategory.findOne(
-            { _id: oldParent },
-            {},
-            { autopopulate: false }
-          );
-          if (oldParent) {
-            // console.log(oldParent.products);
-            let remainingChildrens = oldParent.products.filter(
-              (pro) => pro != product.id
-            );
-            oldParent.products = remainingChildrens;
-            // console.log(oldParent.products);
-            await oldParent.save();
-          }
-        }
 
         return {
           product,

@@ -2,8 +2,12 @@ const Category = require("../../models/Category");
 const { isAdmin } = require("../../utils/checkAuth");
 const { validateCategoryInput } = require("../../validors/categoryValidator");
 const { validateMongoId } = require("../../validors/commonValidator");
-const { base64ToImageUpload } = require("../../utils/base64ToImageUpload");
 const { singleImageDelete } = require("../../utils/deleteImage");
+const {
+  base64ToCloudinary,
+  deleteFromCloudinary,
+  updateFromCloudinary,
+} = require("../../utils/imageUtils");
 
 module.exports = {
   Query: {
@@ -58,7 +62,9 @@ module.exports = {
   Mutation: {
     // ============================  Create  =============>
 
-    async createCategory(_, { input: { photo, name } }, context) {
+    async createCategory(_, { input: { photo, name, parentId } }, context) {
+      parentId = parentId == -1 ? null : parentId;
+
       // 1. check auth
       const user = isAdmin(context);
 
@@ -87,11 +93,12 @@ module.exports = {
 
       // create photo
 
-      photo = base64ToImageUpload(photo);
+      photo = await base64ToCloudinary(photo);
 
       category = new Category({
         name,
         photo,
+        parentId,
       });
       category = await category.save();
       return {
@@ -100,7 +107,7 @@ module.exports = {
     },
     // ============================  Update  =============>
 
-    async updateCategory(_, { input: { id, name, photo } }, context) {
+    async updateCategory(_, { input: { id, name, photo, parentId } }, context) {
       // 1. check auth
       const user = isAdmin(context);
 
@@ -118,13 +125,13 @@ module.exports = {
 
       // manipulate photo
       if (category.photo !== photo) {
-        singleImageDelete(category.photo);
-        photo = base64ToImageUpload(photo);
+        photo = await updateFromCloudinary(category.photo, photo);
       }
 
       if (category) {
         category.name = name;
         category.photo = photo;
+        category.parentId = parentId;
         category = await category.save();
         return {
           category,

@@ -1,7 +1,7 @@
 const autopopulate = require("mongoose-autopopulate");
 
 const mongoose = require("mongoose");
-const { singleImageDelete } = require("../utils/deleteImage");
+const { deleteFromCloudinary } = require("../utils/imageUtils");
 
 const categorySchema = mongoose.Schema(
   {
@@ -11,17 +11,15 @@ const categorySchema = mongoose.Schema(
     photo: {
       type: String,
     },
+    parentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      // autopopulate: true,
+    },
     active: {
       type: Boolean,
       default: true,
     },
-    subcategories: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Subcategory",
-        autopopulate: true,
-      },
-    ],
   },
   {
     timestamps: true,
@@ -32,7 +30,7 @@ categorySchema.plugin(autopopulate);
 // Delete images
 categorySchema.pre("remove", async function (next) {
   if (this.photo) {
-    singleImageDelete(this.photo);
+    await deleteFromCloudinary(this.photo);
   }
 
   next();
