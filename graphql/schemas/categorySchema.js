@@ -16,13 +16,13 @@ module.exports.categorySchema = `
   input CategoryCreateInput {
     name: String!
     photo: String!
-    parentId: ID!
+    parentId: ID
   }
 
   input CategoryUpdateInput {
     id: ID!
     name: String!
     photo: String!
-    parentId: ID!
+    parentId: ID
   }
 `;

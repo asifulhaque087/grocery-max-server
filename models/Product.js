@@ -103,7 +103,7 @@ productSchema.plugin(autopopulate);
 // Delete images
 productSchema.pre("remove", async function (next) {
   if (this.photo) {
-    deleteFromCloudinary(this.photo);
+    await deleteFromCloudinary(this.photo);
   }
 
   next();

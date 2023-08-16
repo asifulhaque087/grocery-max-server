@@ -107,7 +107,7 @@ module.exports = {
     },
     // ============================  Update  =============>
 
-    async updateCategory(_, { input: { id, name, photo } }, context) {
+    async updateCategory(_, { input: { id, name, photo, parentId } }, context) {
       // 1. check auth
       const user = isAdmin(context);
 
@@ -131,6 +131,7 @@ module.exports = {
       if (category) {
         category.name = name;
         category.photo = photo;
+        category.parentId = parentId;
         category = await category.save();
         return {
           category,

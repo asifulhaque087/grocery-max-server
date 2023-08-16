@@ -1,4 +1,4 @@
-module.exports.validateProductInput = (name, photo, subcategory) => {
+module.exports.validateProductInput = (name, photo, category) => {
   const errors = [];
   const makeError = (field, message) => {
     errors.push({ field, message });
