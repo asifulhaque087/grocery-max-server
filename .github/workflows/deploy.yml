@@ -15,7 +15,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Cloning github repository using ssh
+      - name: Cloning or pulling github repository using ssh
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -41,6 +41,7 @@ jobs:
       - name: "Create env file"
         run: |
           echo "NODE_ENV=${{ secrets.NODE_ENV}}" >> .env
+          echo "PORT=${{ secrets.PORT}}" >> .env
           echo "MONGO_URI=${{ secrets.MONGO_URI}}" >> .env
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY}}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET}}" >> .env
@@ -83,6 +84,6 @@ jobs:
             if [ "$STATUS" == "online" ]; then
                 pm2 reload grocery-max-server 
             else
-                pm2 start npm --name grocery-max-server -- run start -- -p 3001
+                pm2 start npm --name grocery-max-server -- run start
               # pm2 save
             fi
