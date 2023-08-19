@@ -17,34 +17,16 @@ jobs:
     steps:
       - name: "Create env file"
         run: |
-          echo "${{ secrets.USERNAME  }}" > .env
-
-      - name: Deploy using ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            cd /var/www/projects/
-            if [ -d "grocery-max-server" ]; then
-              cd grocery-max-server 
-              git pull
-              export NVM_DIR=~/.nvm
-              source ~/.nvm/nvm.sh  
-              npm install
-              pm2 reload grocery-max-server 
-
-            else
-              git clone git@github.com:asifulhaque087/grocery-max-server.git grocery-max-server 
-              cd grocery-max-server 
-              export NVM_DIR=~/.nvm
-              source ~/.nvm/nvm.sh  
-              npm install
-              pm2 start npm --name grocery-max-server -- run start -- -p 3001
-              # pm2 save
-            fi
+          echo "NODE_ENV=${{ secrets.NODE_ENV}}" >> .env
+          echo "PORT=${{ secrets.PORT}}" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI}}" >> .env
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY}}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET}}" >> .env
+          echo "EMAIL_SERVICE=${{ secrets.EMAIL_SERVICE}}" >> .env
+          echo "EMAIL_PORT${{ secrets.EMAIL_PORT}}" >> .env
+          echo "EMAIL_USERNAME${{ secrets.EMAIL_USERNAME}}" >> .env
+          echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD}}" >> .env
+          echo "EMAIL_FROM=${{ secrets.EMAIL_FROM}}" >> .env
 
       - name: Copy .env file to server using SCP
         uses: appleboy/scp-action@master
@@ -55,8 +37,27 @@ jobs:
           source: ".env"
           target: /var/www/projects/grocery-max-server/
 
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
           script: |
-            cd /var/www/projects/grocery-max-server/
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh  
-            pm2 reload grocery-max-server
+            cd /var/www/projects/grocery-max-server
+            if [ -d "node_modules" ]; then
+              git pull
+              export NVM_DIR=~/.nvm
+              source ~/.nvm/nvm.sh  
+              npm install
+              pm2 reload grocery-max-server 
+
+            else
+              git clone git@github.com:asifulhaque087/grocery-max-server.git ./
+              export NVM_DIR=~/.nvm
+              source ~/.nvm/nvm.sh  
+              npm install
+              pm2 start npm --name grocery-max-server -- run start -- -p 3001
+              # pm2 save
+            fi
