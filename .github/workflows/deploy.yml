@@ -72,6 +72,9 @@ jobs:
 
             cd /var/www/projects/grocery-max-server
 
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh  
+
             # Replace 'your_app_name' with the actual name of your PM2 application
             APP_NAME="grocery-max-server"
 
