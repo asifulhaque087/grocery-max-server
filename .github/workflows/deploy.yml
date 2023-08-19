@@ -24,18 +24,16 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /var/www/projects/
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh  
             if [ -d "grocery-max-server" ]; then
               cd grocery-max-server/
               git pull
-              export NVM_DIR=~/.nvm
-              source ~/.nvm/nvm.sh  
               npm install
 
             else
               git clone git@github.com:asifulhaque087/grocery-max-server.git grocery-max-server
               cd grocery-max-server/
-              export NVM_DIR=~/.nvm
-              source ~/.nvm/nvm.sh  
               npm install
             fi
 
