@@ -21,11 +21,12 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
+          port: ${{ secrets.MACHINE_PORT }}
           script: |
             cd /var/www/projects/
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh  
+
             if [ -d "grocery-max-server" ]; then
               cd grocery-max-server/
               git pull
@@ -40,7 +41,6 @@ jobs:
       - name: "Create env file"
         run: |
           echo "NODE_ENV=${{ secrets.NODE_ENV}}" >> .env
-          echo "PORT=${{ secrets.PORT}}" >> .env
           echo "MONGO_URI=${{ secrets.MONGO_URI}}" >> .env
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY}}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET}}" >> .env
@@ -65,7 +65,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
+          port: ${{ secrets.MACHINE_PORT }}
           script: |
 
             cd /var/www/projects/grocery-max-server
