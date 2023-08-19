@@ -15,6 +15,30 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Cloning github repository using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /var/www/projects/
+            if [ -d "grocery-max-server" ]; then
+              cd grocer-max-server/
+              git pull
+              export NVM_DIR=~/.nvm
+              source ~/.nvm/nvm.sh  
+              npm install
+
+            else
+              git clone git@github.com:asifulhaque087/grocery-max-server.git grocery-max-server
+              cd grocer-max-server/
+              export NVM_DIR=~/.nvm
+              source ~/.nvm/nvm.sh  
+              npm install
+            fi
+
       - name: "Create env file"
         run: |
           echo "NODE_ENV=${{ secrets.NODE_ENV}}" >> .env
@@ -37,7 +61,7 @@ jobs:
           source: ".env"
           target: /var/www/projects/grocery-max-server/
 
-      - name: Deploy using ssh
+      - name: Start server using ssh
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -45,19 +69,19 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd /var/www/projects/grocery-max-server
-            if [ -d "node_modules" ]; then
-              git pull
-              export NVM_DIR=~/.nvm
-              source ~/.nvm/nvm.sh  
-              npm install
-              pm2 reload grocery-max-server 
 
+            cd /var/www/projects/grocery-max-server
+
+            # Replace 'your_app_name' with the actual name of your PM2 application
+            APP_NAME="grocery-max-server"
+
+            # Get the status of the PM2 application
+            STATUS=$(pm2 show $APP_NAME | grep "status" | awk '{print $4}')
+
+            # Check the status and run corresponding commands
+            if [ "$STATUS" == "online" ]; then
+                pm2 reload grocery-max-server 
             else
-              git clone git@github.com:asifulhaque087/grocery-max-server.git ./
-              export NVM_DIR=~/.nvm
-              source ~/.nvm/nvm.sh  
-              npm install
-              pm2 start npm --name grocery-max-server -- run start -- -p 3001
+                pm2 start npm --name grocery-max-server -- run start -- -p 3001
               # pm2 save
             fi
